@@ -1,9 +1,8 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gorilla/mux"
+	"github.com/kalote/balance-server/pkg/handler"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	muxprom "gitlab.com/msvechla/mux-prometheus/pkg/middleware"
 )
@@ -15,14 +14,13 @@ func newRouter() *mux.Router {
 
 	router.Path("/metrics").Handler(promhttp.Handler())
 
-	sub := router.PathPrefix("/eth").Subrouter()
-	sub.HandleFunc("/balance/{ethAddress}", GetBalance)
-	return router
-}
+	h := handler.NewHandler(logger)
 
-func GetBalance(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(vars["ethAddress"]))
+	ethRouter := router.PathPrefix("/eth").Subrouter()
+	ethRouter.HandleFunc("/balance/{ethAddress}", h.GetBalance)
+
+	probesRouter := router.PathPrefix("/_meta").Subrouter()
+	probesRouter.HandleFunc("/live", h.LiveProbe)
+	probesRouter.HandleFunc("/ready", h.ReadyProbe)
+	return router
 }
