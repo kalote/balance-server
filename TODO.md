@@ -1,0 +1,4 @@
+- [] Tests
+- [] Remove logger & put LoggingHandler (https://github.com/gorilla/handlers)
+- [] Support multiple chain
+- [] Implement cache
