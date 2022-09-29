@@ -1,13 +1,23 @@
 package handler
 
-import "go.uber.org/zap"
+import (
+	"github.com/kalote/balance-server/pkg/conf"
+	"go.uber.org/zap"
+)
 
-type handler struct {
+type Handler struct {
+	c      *conf.Config
 	logger *zap.Logger
 }
 
-func NewHandler(logger *zap.Logger) *handler {
-	return &handler{
+type ProbeResponse struct {
+	Status string `json:"status"`
+	Type   string `json:"type"`
+}
+
+func NewHandler(c *conf.Config, logger *zap.Logger) *Handler {
+	return &Handler{
+		c,
 		logger,
 	}
 }

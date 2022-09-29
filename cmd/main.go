@@ -2,18 +2,34 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
+	"github.com/kalote/balance-server/pkg/conf"
+	"github.com/kelseyhightower/envconfig"
 	"go.uber.org/zap"
 )
 
-var logger *zap.Logger
+var (
+	logger *zap.Logger
+	c      conf.Config
+)
 
 func main() {
-	logger, _ := zap.NewProduction()
+	// Logger setup
+	logger, _ = zap.NewProduction()
 	defer logger.Sync()
 
-	r := newRouter()
+	// Env vars: read & populate c
+	err := envconfig.Process("", &c)
+	if err != nil {
+		logger.Fatal("Cannot read config", zap.Error(err))
+	}
 
-	logger.Info("Server running on port 3000")
-	logger.Fatal(http.ListenAndServe(":3000", r).Error())
+	// Router init
+	r := NewRouter()
+
+	// Server start
+	port := strconv.Itoa(c.Port)
+	logger.Info("Server running on port " + port)
+	logger.Fatal(http.ListenAndServe(":"+port, r).Error())
 }

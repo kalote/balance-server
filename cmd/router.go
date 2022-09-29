@@ -7,20 +7,26 @@ import (
 	muxprom "gitlab.com/msvechla/mux-prometheus/pkg/middleware"
 )
 
-func newRouter() *mux.Router {
+func NewRouter() *mux.Router {
+	// Init mux
 	router := mux.NewRouter()
+
+	// Init handler with config & logger
+	h := handler.NewHandler(&c, logger)
+
+	// Init prometheus metrics & mw & path
 	instrumentation := muxprom.NewDefaultInstrumentation()
 	router.Use(instrumentation.Middleware)
-
 	router.Path("/metrics").Handler(promhttp.Handler())
 
-	h := handler.NewHandler(logger)
-
+	// Main route
 	ethRouter := router.PathPrefix("/eth").Subrouter()
 	ethRouter.HandleFunc("/balance/{ethAddress}", h.GetBalance)
 
+	// Probes route
 	probesRouter := router.PathPrefix("/_meta").Subrouter()
-	probesRouter.HandleFunc("/live", h.LiveProbe)
+	probesRouter.HandleFunc("/healthz", h.LiveProbe)
 	probesRouter.HandleFunc("/ready", h.ReadyProbe)
+
 	return router
 }

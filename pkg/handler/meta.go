@@ -1,18 +1,24 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
-type ProbeResponse struct {
-	Status string `json:"status"`
-	Type   string `json:"type"`
+func (h *Handler) LiveProbe(w http.ResponseWriter, r *http.Request) {
+	h.logger.Info("liveness probe check")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(ProbeResponse{
+		Status: "UP",
+		Type:   "Live",
+	})
 }
 
-func (h *handler) LiveProbe(w http.ResponseWriter, r *http.Request) {
-	h.sendProbe("live", w)
-}
-
-func (h *handler) ReadyProbe(w http.ResponseWriter, r *http.Request) {
-	h.sendProbe("ready", w)
+func (h *Handler) ReadyProbe(w http.ResponseWriter, r *http.Request) {
+	h.logger.Info("Readiness probe check")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(ProbeResponse{
+		Status: "UP",
+		Type:   "Ready",
+	})
 }
