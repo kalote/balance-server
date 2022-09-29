@@ -1,3 +1,3 @@
 package conf
 
-const InfuraURL = "https://mainnet.infura.io/v3/"
+var InfuraURL = "https://mainnet.infura.io/v3"

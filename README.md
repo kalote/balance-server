@@ -18,3 +18,10 @@ You can also build & run the docker image:
 docker build -t balance-server:latest .
 docker run --name=balance-server -p 3000:3000 -e APIKEY=YOUR_API_KEY -d balance-server:latest
 ```
+
+## Endpoints
+
+- `/eth/balance/{ethAddress}`: return the balance of the specified ethereum address
+- `/metrics`: return the prometheus compatible metrics
+- `/_meta/healthz`: liveness probe
+- `/_meta/ready`: readiness probe
